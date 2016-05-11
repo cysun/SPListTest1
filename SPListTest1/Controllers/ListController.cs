@@ -18,6 +18,7 @@ namespace SPListTest1.Controllers
         string FieldDetails = "Request_x0020_Details";
         string FieldDueDate = "Request_x0020_Due_x0020_Date";
         string FieldAuthor = "Author";
+        string FieldManager = "Manager";
         string FieldStatus = "Request_x0020_Status";
 
         public ActionResult Items()
@@ -39,6 +40,7 @@ namespace SPListTest1.Controllers
                 item => item[FieldDetails],
                 item => item[FieldDueDate],
                 item => item[FieldAuthor],
+                item => item[FieldManager],
                 item => item[FieldStatus]));
             clientContext.ExecuteQuery();
 
@@ -56,7 +58,7 @@ namespace SPListTest1.Controllers
         }
 
         [HttpPost]
-        public RedirectResult NewItem(string details, DateTime dueDate)
+        public RedirectResult NewItem(string managerName, string details, DateTime dueDate)
         {
             ClientContext clientContext = new ClientContext(SiteUrl);
 
@@ -66,12 +68,19 @@ namespace SPListTest1.Controllers
             FieldUserValue userValue = new FieldUserValue();
             userValue.LookupId = user.Id;
 
+            var manager = clientContext.Web.EnsureUser(managerName);
+            clientContext.Load(manager);
+            clientContext.ExecuteQuery();
+            FieldUserValue managerValue = new FieldUserValue();
+            managerValue.LookupId = manager.Id;
+
             List spList = clientContext.Web.Lists.GetByTitle(ListName);
             var info = new ListItemCreationInformation();
             var item = spList.AddItem(info);
             item[FieldDetails] = details;
             item[FieldDueDate] = dueDate;
             item[FieldAuthor] = userValue;
+            item[FieldManager] = managerValue;
             item.Update();
             clientContext.ExecuteQuery();
 
@@ -108,13 +117,16 @@ namespace SPListTest1.Controllers
             var dueDate = spListItem[FieldDueDate];
             string Request_Due_Date = dueDate != null ? ((DateTime)dueDate).ToShortDateString() : "";
             FieldUserValue Author = (FieldUserValue)spListItem[FieldAuthor];
+            FieldUserValue Manager = (FieldUserValue)spListItem[FieldManager];
             string Request_By = Author.LookupValue;
+            string Manager_Name = Manager.LookupValue;
             
             ViewBag.Request_ID = Request_ID;
             ViewBag.Request_Details = Request_Details;
             ViewBag.Request_Status = Request_Status;
             ViewBag.Request_Due_Date = Request_Due_Date;
             ViewBag.Request_By = Request_By;
+            ViewBag.Manager_Name = Manager_Name;
             ViewBag.ID = id;
 
             // Getting choice fields from Request Status column 

@@ -2,11 +2,29 @@
 @{
     ViewBag.Title = "New Item";
 }
-
+@section Scripts
+{
+<script>
+    $(function () {
+        $("#check").click(function () {
+            $.ajax({
+                url: '@Url.Content("~/api/Service/EnsureUser")',
+                data: {
+                    username: $("input[name='managerName']").val()
+                },
+                success: function () { $("#check").hide(); },
+                error: function () { $("input[name='managerName']").val(""); }
+});
+        });
+    });
+</script>
+}
 <h2>New Item</h2>
 
 <form action="NewItem" method="post">
   Requester: @ViewBag.Username <br />
+  Manager: <input type="text" name="managerName" />
+    <a id="check" href="javascript:void(0)" class="btn btn-default" role="button">Check</a> <br />
   Request Due Date(YYYY/MM/DD Format): <input type="date" name="dueDate" /> <br />
   Request Details: <br />
   <textarea name="details" rows="5" cols="50"></textarea><br/> <br />

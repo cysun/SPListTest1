@@ -17,6 +17,7 @@
         <th>Request Details</th>
         <th>Request Due Date</th>
         <th>Requested By</th>
+        <th>Manager</th>
         <th>Request Status</th>
         <th>Operations</th>
     </tr>
@@ -32,6 +33,7 @@
               }
             </td>
             <td>@(((FieldUserValue)listItem["Author"]).LookupValue)</td>
+            <td>@(((FieldUserValue)listItem["Manager"]).LookupValue)</td>
             <td>@listItem["Request_x0020_Status"]</td>
             <td>
                 <a href="@Url.Action("EditItem", "List", new { id = @listItem["ID"] })">Edit</a> |
